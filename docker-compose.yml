@@ -1,0 +1,24 @@
+services:
+  application:
+    build: .
+    restart: "unless-stopped"
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    depends_on:
+      - database
+  
+  database:
+    image: postgres:latest
+    restart: "unless-stopped"
+    environment:
+      POSTGRES_USER: streaming
+      POSTGRES_PASSWORD: streaming
+      POSTGRES_DB: streaming
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+volumes:
+  db_data:
+    driver: local
