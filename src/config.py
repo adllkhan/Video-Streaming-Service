@@ -21,3 +21,11 @@ class Config(BaseSettings):
     DATABASE_NAME: str = "streaming"
     DATABASE_USER: str = "streaming"
     DATABASE_PASSWORD: str = "streaming"  # noqa: S105
+
+    @property
+    def DATABASE_URL(self) -> str:
+        return (
+            f"{self.DATABASE_PROTO}+{self.DATABASE_DRIVER}"
+            f"://{self.DATABASE_USER}:{self.DATABASE_PASSWORD}"
+            f"@{self.DATABASE_HOST}:{self.DATABASE_PORT}/{self.DATABASE_NAME}"
+        )
