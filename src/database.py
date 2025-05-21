@@ -5,10 +5,16 @@ from sqlalchemy.ext.declarative import declarative_base
 
 from config import Config
 
-async_engine = create_async_engine(Config().DATABASE_URL, echo=True)
+
+url = (
+    f"{Config().DATABASE_PROTO}+{Config().DATABASE_DRIVER}"
+    f"://{Config().DATABASE_USER}:{Config().DATABASE_PASSWORD}"
+    f"@{Config().DATABASE_HOST}:{Config().DATABASE_PORT}/{Config().DATABASE_NAME}"
+)
+async_engine = create_async_engine(url=url, echo=True)
 
 async_session = async_sessionmaker(
-    async_engine, class_=AsyncSession, expire_on_commit=False
+    bind=async_engine, expire_on_commit=False
 )
 
 Base = declarative_base()

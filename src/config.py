@@ -13,7 +13,11 @@ class Config(BaseSettings):
     SERVER_CREDENTIALS: bool = True
     SERVER_METHODS: list[str] = ["*"]
     SERVER_HEADERS: list[str] = ["*"]
-    DATABASE_URL: str = "database"
+
+    DATABASE_PROTO: str = "postgresql"
+    DATABASE_DRIVER: str = "asyncpg"
+    DATABASE_HOST: str = "database"
+    DATABASE_PORT: int = 5432
     DATABASE_NAME: str = "streaming"
     DATABASE_USER: str = "streaming"
     DATABASE_PASSWORD: str = "streaming"  # noqa: S105

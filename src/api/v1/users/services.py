@@ -41,7 +41,7 @@ class UserServices:
         return user
 
     async def update_user(
-        self, user_id: int, user: schemas.UserUpdate
+        self, user_id: int, user: schemas.UserIn
     ) -> schemas.UserOut:
         user_in_db = await self.repository.get_user(user_id=user_id)
         if not user_in_db:
