@@ -11,11 +11,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 COPY pyproject.toml .
 
-RUN pip install uv && \
-    uv sync
+RUN pip install --no-cache-dir .
 
 COPY . .
 
 EXPOSE 8000
 
-CMD ["uv", "run", "src/main.py"]
+CMD ["python", "src/main.py"]
