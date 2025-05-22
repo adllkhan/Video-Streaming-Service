@@ -36,7 +36,7 @@ async def create_user(
 ) -> schemas.UserOut:
     repo = UserRepository(session=session)
     services = UserServices(repository=repo)
-    user = services.create_user(user=user)
+    user = await services.create_user(user=user)
     return user
 
 @router.put(path="/{user_id}", response_model=schemas.UserOut)
