@@ -1,7 +1,9 @@
-from fastapi import HTTPException, status
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+
+from src.exceptions import HTTPAlreadyExists
+
 from .models import User
 
 
@@ -21,13 +23,10 @@ class UserRepository:
 
     async def create_user(self, user: User) -> User:
         self.session.add(user)
-        # existing_user = await self.repository.get_user(user=user)
         try:
             await self.session.commit()
         except IntegrityError:
-            raise HTTPException(
-                status_code=status.HTTP_409_CONFLICT, detail=f"Username {user.username} is busy!"
-            )
+            raise HTTPAlreadyExists(model="User", request={"username": user.username})
         await self.session.refresh(user)
         return user
 
