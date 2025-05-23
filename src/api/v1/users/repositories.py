@@ -26,7 +26,7 @@ class UserRepository:
         try:
             await self.session.commit()
         except IntegrityError:
-            raise HTTPAlreadyExists(model="User", request={"username": user.username})
+            raise HTTPAlreadyExists(model=User, request={"username": user.username})
         await self.session.refresh(user)
         return user
 

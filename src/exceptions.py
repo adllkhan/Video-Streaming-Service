@@ -1,4 +1,7 @@
+from http import HTTPStatus
+
 from fastapi import HTTPException, status
+from sqlalchemy.orm import DeclarativeMeta
 
 
 class HTTPBaseException(HTTPException):
@@ -7,31 +10,27 @@ class HTTPBaseException(HTTPException):
         status_code: int,
         detail: dict | None = None,
         message: str | None = None,
-        code: str | None = None,
     ) -> None:
         if not detail:
             detail = {}
         if not message:
             message = "An unknown error occurred"
-        if not code:
-            code = "UNKNOWN_ERROR"
         super().__init__(
             status_code=status_code,
             detail={
                 "message": message,
                 "detail": detail,
                 "status_code": status_code,
-                "code": code,
+                "code": HTTPStatus(status_code).phrase.upper(),
             },
         )
 
 
 class HTTPAlreadyExists(HTTPBaseException):
-    def __init__(self, model: str, request: dict | None = None) -> None:
-        message = f"{model.capitalize()} already exists"
+    def __init__(self, model: DeclarativeMeta, request: dict | None = None) -> None:
+        message = f"{model.__name__.capitalize()} already exists."
         super().__init__(
             status_code=status.HTTP_409_CONFLICT,
             detail={"request": request},
             message=message,
-            code="CONFLICT",
         )
