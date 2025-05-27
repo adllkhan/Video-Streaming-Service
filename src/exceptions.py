@@ -34,29 +34,13 @@ class HTTPAlreadyExists(HTTPBaseException):
             detail={"request": request},
             message=message,
         )
+
+
 class HTTPNotFound(HTTPBaseException):
-    def __init__(self, model: DeclarativeMeta, search: dict | None = None) -> None:
-        message = f"{model.__name__.capitalize()} not found!"
+    def __init__(self, model: DeclarativeMeta, request: dict | None = None) -> None:
+        message = f"{model.__name__.capitalize()} not found."
         super().__init__(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail={"search": search},
+            detail={"request": request},
             message=message,
         )
-
-class HTTPValidationError(HTTPBaseException):
-    def __init__(self, errors: dict | None = None) -> None:
-        message = f"validation failed!"
-        super().__init__(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail={"errors": errors},
-            message=message,
-        )        
-
-class HTTPBadRequest(HTTPBaseException):
-    def __init__(self, errors: dict | None = None) -> None:
-        message = f"bad request!"
-        super().__init__(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail={"errors": errors},
-            message=message,
-        )        

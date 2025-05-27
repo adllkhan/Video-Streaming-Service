@@ -39,10 +39,6 @@ class UserServices:
         return user
 
     async def update_user(self, user_id: int, user: schemas.UserIn) -> schemas.UserOut:
-        user_in_db = await self.repository.get_user(user_id=user_id)
-        if not user_in_db:
-            return None  # TODO сделать исключение или пустой ответ
-
         user_model = User(**user.model_dump(), id=user_id)
         user_in_db = await self.repository.update_user(user=user_model)
         user = schemas.UserOut(
@@ -54,12 +50,6 @@ class UserServices:
         return user
 
     async def delete_user(self, user_id: int) -> schemas.UserOut:
-        # TODO При удалении возвращается либо ничего либо сам юзер
-
-        user_in_db = await self.repository.get_user(user_id=user_id)
-        if not user_in_db:
-            return None  # TODO сделать исключение или пустой ответ
-
         user_in_db = await self.repository.delete_user(user_id=user_id)
         user = schemas.UserOut(
             user_id=user_in_db.id,

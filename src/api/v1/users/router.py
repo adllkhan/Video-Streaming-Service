@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database import get_session
@@ -30,7 +30,9 @@ async def get_user(
     return user
 
 
-@router.post(path="", response_model=schemas.UserOut)
+@router.post(
+    path="", response_model=schemas.UserOut, status_code=status.HTTP_201_CREATED
+)
 async def create_user(
     user: schemas.UserIn, session: AsyncSession = Depends(get_session)
 ) -> schemas.UserOut:
@@ -40,7 +42,11 @@ async def create_user(
     return user
 
 
-@router.put(path="/{user_id}", response_model=schemas.UserOut)
+@router.put(
+    path="/{user_id}",
+    response_model=schemas.UserOut,
+    status_code=status.HTTP_200_OK,
+)
 async def update_user(
     user_id: int, user: schemas.UserIn, session: AsyncSession = Depends(get_session)
 ) -> schemas.UserOut:
@@ -50,7 +56,11 @@ async def update_user(
     return user
 
 
-@router.delete(path="/{user_id}", response_model=schemas.UserOut)
+@router.delete(
+    path="/{user_id}",
+    response_model=schemas.UserOut,
+    status_code=status.HTTP_200_OK,
+)
 async def delete_user(
     user_id: int, session: AsyncSession = Depends(get_session)
 ) -> schemas.UserOut:
