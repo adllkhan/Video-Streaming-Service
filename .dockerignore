@@ -6,6 +6,8 @@ venv/
 .venv/
 .vscode/
 .idea/
+.git/
+.ruff_cache/
 
 *.egg-info
 *.py[oc]
