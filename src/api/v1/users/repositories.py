@@ -1,8 +1,7 @@
+from exceptions import HTTPAlreadyExists, HTTPNotFound
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-
-from src.exceptions import HTTPAlreadyExists, HTTPNotFound
 
 from .models import User
 

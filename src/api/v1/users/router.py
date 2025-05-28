@@ -1,7 +1,6 @@
+from database import get_session
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from src.database import get_session
 
 from . import schemas
 from .repositories import UserRepository
