@@ -1,9 +1,10 @@
-from api import router
-from config import Config
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException
+
+from api import router
+from config import Config
 
 app = FastAPI(
     debug=Config().SERVER_DEBUG,
