@@ -1,5 +1,7 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from starlette.exceptions import HTTPException
 
 from api import router
 from config import Config
@@ -22,6 +24,12 @@ app.add_middleware(
 
 app.include_router(router=router)
 
+
+@app.exception_handler(HTTPException)
+async def custom_http_exception_handler(request: Request, exc: HTTPException):
+    return JSONResponse(status_code=exc.status_code, content=exc.detail)
+
+
 if __name__ == "__main__":
     from uvicorn import run
 
@@ -30,4 +38,5 @@ if __name__ == "__main__":
         host=Config().SERVER_HOST,
         port=Config().SERVER_PORT,
         reload=Config().SERVER_RELOAD,
+        app_dir="src",
     )

@@ -13,7 +13,19 @@ class Config(BaseSettings):
     SERVER_CREDENTIALS: bool = True
     SERVER_METHODS: list[str] = ["*"]
     SERVER_HEADERS: list[str] = ["*"]
-    DATABASE_URL: str = "database"
+
+    DATABASE_PROTO: str = "postgresql"
+    DATABASE_DRIVER: str = "asyncpg"
+    DATABASE_HOST: str = "database"
+    DATABASE_PORT: int = 5432
     DATABASE_NAME: str = "streaming"
     DATABASE_USER: str = "streaming"
     DATABASE_PASSWORD: str = "streaming"  # noqa: S105
+
+    @property
+    def DATABASE_URL(self) -> str:
+        return (
+            f"{self.DATABASE_PROTO}+{self.DATABASE_DRIVER}"
+            f"://{self.DATABASE_USER}:{self.DATABASE_PASSWORD}"
+            f"@{self.DATABASE_HOST}:{self.DATABASE_PORT}/{self.DATABASE_NAME}"
+        )

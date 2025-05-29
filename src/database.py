@@ -5,11 +5,9 @@ from sqlalchemy.ext.declarative import declarative_base
 
 from config import Config
 
-async_engine = create_async_engine(Config().DATABASE_URL, echo=True)
+async_engine = create_async_engine(url=Config().DATABASE_URL, echo=True)
 
-async_session = async_sessionmaker(
-    async_engine, class_=AsyncSession, expire_on_commit=False
-)
+async_session = async_sessionmaker(bind=async_engine, expire_on_commit=False)
 
 Base = declarative_base()
 
