@@ -6,13 +6,7 @@ ENV PYTHONPATH=/app/src
 
 WORKDIR /app
 
-# RUN pip install uv --no-cache
-
 COPY pyproject.toml .
-
-# RUN uv pip install . \
-#     --system \
-#     --no-cache
 
 RUN pip install --no-cache-dir .
 
@@ -20,4 +14,6 @@ COPY . .
 
 EXPOSE 8000
 
-CMD ["python", "src/main.py"]
+WORKDIR /app/src
+
+CMD ["python", "main.py"]

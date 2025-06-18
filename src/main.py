@@ -3,8 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException
 
+from api import router
 from config import Config
-from src.api.v1.auth import router
 
 app = FastAPI(
     debug=Config().SERVER_DEBUG,
@@ -38,5 +38,4 @@ if __name__ == "__main__":
         host=Config().SERVER_HOST,
         port=Config().SERVER_PORT,
         reload=Config().SERVER_RELOAD,
-        app_dir="src",
     )

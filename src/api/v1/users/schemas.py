@@ -11,6 +11,12 @@ class UserOut(UsersOut):
     last_name: str
 
 
+class UserUpdate(BaseModel):
+    username: str | None = None
+    first_name: str | None = None
+    last_name: str | None = None
+
+
 class UserIn(BaseModel):
     username: str
     first_name: str

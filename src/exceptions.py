@@ -8,18 +8,18 @@ class HTTPBaseException(HTTPException):
     def __init__(
         self,
         status_code: int,
-        detail: dict | None = None,
+        details: dict | None = None,
         message: str | None = None,
     ) -> None:
-        if not detail:
-            detail = {}
+        if not details:
+            details = {}
         if not message:
             message = "An unknown error occurred"
         super().__init__(
             status_code=status_code,
             detail={
                 "message": message,
-                "detail": detail,
+                "details": details,
                 "status_code": status_code,
                 "code": HTTPStatus(status_code).phrase.upper(),
             },
@@ -31,7 +31,7 @@ class HTTPAlreadyExists(HTTPBaseException):
         message = f"{model.__name__.capitalize()} already exists!"
         super().__init__(
             status_code=status.HTTP_409_CONFLICT,
-            detail={"request": request},
+            details={"request": request},
             message=message,
         )
 
@@ -41,6 +41,16 @@ class HTTPNotFound(HTTPBaseException):
         message = f"{model.__name__.capitalize()} not found."
         super().__init__(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail={"request": request},
+            details={"request": request},
+            message=message,
+        )
+
+
+class HTTPInvalidToken(HTTPBaseException):
+    def __init__(self) -> None:
+        message = "Invalid token provided."
+        super().__init__(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            details=None,
             message=message,
         )

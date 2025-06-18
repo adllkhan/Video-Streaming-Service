@@ -24,6 +24,12 @@ class UserRepository:
             raise HTTPNotFound(model=User, request={"user_id": user_id})
         return user
 
+    async def get_user_by_username(self, username: str) -> User | None:
+        stmt = select(User).where(User.username == username)
+        result = await self.session.execute(stmt)
+        user = result.scalars().first()
+        return user
+
     async def create_user(self, user: User) -> User:
         self.session.add(user)
         try:
@@ -40,8 +46,7 @@ class UserRepository:
         await self.session.refresh(merged)
         return user
 
-    async def delete_user(self, user_id: int) -> User:
-        user = await self.get_user(user_id=user_id)
+    async def delete_user(self, user: User) -> User:
         await self.session.delete(user)
         await self.session.commit()
         return user

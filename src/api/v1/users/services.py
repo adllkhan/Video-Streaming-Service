@@ -1,9 +1,10 @@
 from . import schemas
 from .models import User
 from .repositories import UserRepository
+from .utils import hash_password
 
 
-class UserServices:
+class UserService:
     def __init__(self, repository: UserRepository) -> None:
         self.repository = repository
 
@@ -17,8 +18,6 @@ class UserServices:
 
     async def get_user(self, user_id: int) -> schemas.UserOut:
         user_in_db = await self.repository.get_user(user_id)
-        if not user_in_db:
-            return None  # TODO сделать исключение или пустой ответ
         user = schemas.UserOut(
             user_id=user_in_db.id,
             username=user_in_db.username,
@@ -28,6 +27,7 @@ class UserServices:
         return user
 
     async def create_user(self, user: schemas.UserIn) -> schemas.UserOut:
+        user.password = hash_password(user.password)
         user_model = User(**user.model_dump())
         user_in_db = await self.repository.create_user(user=user_model)
         user = schemas.UserOut(
@@ -38,9 +38,13 @@ class UserServices:
         )
         return user
 
-    async def update_user(self, user_id: int, user: schemas.UserIn) -> schemas.UserOut:
-        user_model = User(**user.model_dump(), id=user_id)
-        user_in_db = await self.repository.update_user(user=user_model)
+    async def update_user(
+        self, update: schemas.UserUpdate, user: User
+    ) -> schemas.UserOut:
+        user.first_name = update.first_name or user.first_name
+        user.last_name = update.last_name or user.last_name
+        user.username = update.username or user.username
+        user_in_db = await self.repository.update_user(user=user)
         user = schemas.UserOut(
             user_id=user_in_db.id,
             username=user_in_db.username,
@@ -49,8 +53,8 @@ class UserServices:
         )
         return user
 
-    async def delete_user(self, user_id: int) -> schemas.UserOut:
-        user_in_db = await self.repository.delete_user(user_id=user_id)
+    async def delete_user(self, user: User) -> schemas.UserOut:
+        user_in_db = await self.repository.delete_user(user=user)
         user = schemas.UserOut(
             user_id=user_in_db.id,
             username=user_in_db.username,

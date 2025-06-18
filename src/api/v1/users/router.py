@@ -2,10 +2,12 @@ from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_session
+from dependencies import get_current_user
 
 from . import schemas
+from .models import User
 from .repositories import UserRepository
-from .services import UserServices
+from .services import UserService
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
@@ -15,8 +17,8 @@ async def get_users(
     session: AsyncSession = Depends(get_session),
 ) -> list[schemas.UsersOut]:
     repo = UserRepository(session=session)
-    services = UserServices(repository=repo)
-    users = await services.get_users()
+    service = UserService(repository=repo)
+    users = await service.get_users()
     return users
 
 
@@ -25,8 +27,8 @@ async def get_user(
     user_id: int, session: AsyncSession = Depends(get_session)
 ) -> schemas.UserOut:
     repo = UserRepository(session=session)
-    services = UserServices(repository=repo)
-    user = await services.get_user(user_id=user_id)
+    service = UserService(repository=repo)
+    user = await service.get_user(user_id=user_id)
     return user
 
 
@@ -37,34 +39,36 @@ async def create_user(
     user: schemas.UserIn, session: AsyncSession = Depends(get_session)
 ) -> schemas.UserOut:
     repo = UserRepository(session=session)
-    services = UserServices(repository=repo)
-    user = await services.create_user(user=user)
+    service = UserService(repository=repo)
+    user = await service.create_user(user=user)
     return user
 
 
 @router.put(
-    path="/{user_id}",
+    path="/me",
     response_model=schemas.UserOut,
-    status_code=status.HTTP_200_OK,
+    status_code=status.HTTP_205_RESET_CONTENT,
 )
 async def update_user(
-    user_id: int, user: schemas.UserIn, session: AsyncSession = Depends(get_session)
+    update: schemas.UserUpdate,
+    user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(get_session),
 ) -> schemas.UserOut:
     repo = UserRepository(session=session)
-    services = UserServices(repository=repo)
-    user = await services.update_user(user_id=user_id, user=user)
+    service = UserService(repository=repo)
+    user = await service.update_user(update=update, user=user)
     return user
 
 
 @router.delete(
-    path="/{user_id}",
+    path="/me",
     response_model=schemas.UserOut,
     status_code=status.HTTP_200_OK,
 )
 async def delete_user(
-    user_id: int, session: AsyncSession = Depends(get_session)
+    user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)
 ) -> schemas.UserOut:
     repo = UserRepository(session=session)
-    services = UserServices(repository=repo)
-    user = await services.delete_user(user_id=user_id)
+    service = UserService(repository=repo)
+    user = await service.delete_user(user=user)
     return user
