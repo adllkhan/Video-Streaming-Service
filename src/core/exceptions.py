@@ -21,7 +21,7 @@ class HTTPBaseException(HTTPException):
                 "message": message,
                 "details": details,
                 "status_code": status_code,
-                "code": HTTPStatus(status_code).phrase.upper(),
+                "code": HTTPStatus(status_code).phrase.upper().replace(" ", "_"),
             },
         )
 
@@ -52,5 +52,25 @@ class HTTPInvalidToken(HTTPBaseException):
         super().__init__(
             status_code=status.HTTP_401_UNAUTHORIZED,
             details=None,
+            message=message,
+        )
+
+
+class HTTPInvalidCredentials(HTTPBaseException):
+    def __init__(self, username: str) -> None:
+        message = "Username or password is incorrect."
+        super().__init__(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            details={"request": {"username": username}},
+            message=message,
+        )
+
+
+class HTTPFieldAlreadyTaken(HTTPBaseException):
+    def __init__(self, field: str, value: str) -> None:
+        message = f"{field.capitalize()} '{value}' is already taken."
+        super().__init__(
+            status_code=status.HTTP_409_CONFLICT,
+            details={"request": {field: value}},
             message=message,
         )

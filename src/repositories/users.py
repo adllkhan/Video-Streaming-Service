@@ -2,9 +2,8 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from exceptions import HTTPAlreadyExists, HTTPNotFound
-
-from .models import User
+from core.exceptions import HTTPAlreadyExists, HTTPFieldAlreadyTaken
+from models import User
 
 
 class UserRepository:
@@ -13,22 +12,18 @@ class UserRepository:
 
     async def get_users(self) -> list[User]:
         stmt = select(User)
-        result = await self.session.execute(stmt)
-        return result.scalars().all()
+        result = await self.session.scalars(stmt)
+        return result.all()
 
     async def get_user(self, user_id: int) -> User:
         stmt = select(User).where(User.id == user_id)
-        result = await self.session.execute(stmt)
-        user = result.scalars().first()
-        if not user:
-            raise HTTPNotFound(model=User, request={"user_id": user_id})
-        return user
+        result = await self.session.scalars(stmt)
+        return result.first()
 
     async def get_user_by_username(self, username: str) -> User | None:
         stmt = select(User).where(User.username == username)
-        result = await self.session.execute(stmt)
-        user = result.scalars().first()
-        return user
+        result = await self.session.scalars(stmt)
+        return result.first()
 
     async def create_user(self, user: User) -> User:
         self.session.add(user)
@@ -40,7 +35,9 @@ class UserRepository:
         return user
 
     async def update_user(self, user: User) -> User:
-        await self.get_user(user_id=user.id)
+        check = await self.get_user_by_username(user.username)
+        if check and check.id != user.id:
+            raise HTTPFieldAlreadyTaken(field="username", value=user.username)
         merged = await self.session.merge(user)
         await self.session.commit()
         await self.session.refresh(merged)

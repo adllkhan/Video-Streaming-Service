@@ -3,12 +3,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException
 
-from api import router
-from config import Config
+from core.config import config
+from routers import router
 
 app = FastAPI(
-    debug=Config().SERVER_DEBUG,
-    openapi_url="/api/openapi.json",
+    debug=config.SERVER_DEBUG,
+    openapi_url="/.well-known/openapi.json",
     docs_url="/api/docs",
     redoc_url="/api/redoc",
     title="Video-Streaming API",
@@ -16,10 +16,10 @@ app = FastAPI(
 
 app.add_middleware(
     middleware_class=CORSMiddleware,
-    allow_origins=Config().SERVER_CORS_ORIGINS,
-    allow_credentials=Config().SERVER_CREDENTIALS,
-    allow_methods=Config().SERVER_METHODS,
-    allow_headers=Config().SERVER_HEADERS,
+    allow_origins=config.SERVER_CORS_ORIGINS,
+    allow_credentials=config.SERVER_CREDENTIALS,
+    allow_methods=config.SERVER_METHODS,
+    allow_headers=config.SERVER_HEADERS,
 )
 
 app.include_router(router=router)
@@ -35,7 +35,7 @@ if __name__ == "__main__":
 
     run(
         app="main:app",
-        host=Config().SERVER_HOST,
-        port=Config().SERVER_PORT,
-        reload=Config().SERVER_RELOAD,
+        host=config.SERVER_HOST,
+        port=config.SERVER_PORT,
+        reload=config.SERVER_RELOAD,
     )

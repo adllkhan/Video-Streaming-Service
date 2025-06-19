@@ -1,13 +1,13 @@
 from dotenv import load_dotenv
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import HTTPBearer
 from pydantic_settings import BaseSettings
 
 load_dotenv()
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login", auto_error=False)
+security = HTTPBearer(auto_error=False)
 
 
-class Config(BaseSettings):
+class __Config(BaseSettings):
     SERVER_HOST: str = "0.0.0.0"  # noqa: S104
     SERVER_PORT: int = 8000
     SERVER_RELOAD: bool = True
@@ -32,3 +32,13 @@ class Config(BaseSettings):
             f"://{self.DATABASE_USER}:{self.DATABASE_PASSWORD}"
             f"@{self.DATABASE_HOST}:{self.DATABASE_PORT}/{self.DATABASE_NAME}"
         )
+
+
+class __AuthConfig(BaseSettings):
+    ACCESS_TOKEN_SECRET_KEY: str = "super-secret-key"  # noqa: S105
+    ACCESS_TOKEN_ALGORITHM: str = "HS256"  # noqa: S105
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+
+
+config = __Config()
+auth_config = __AuthConfig()

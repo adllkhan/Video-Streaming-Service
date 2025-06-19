@@ -6,8 +6,8 @@ from logging.config import fileConfig
 from alembic import context
 from sqlalchemy.ext.asyncio import create_async_engine
 
-from src.config import Config
-from src.database import Base
+from core.config import Config
+from core.database import Base
 
 
 def import_all_models(package_name):
